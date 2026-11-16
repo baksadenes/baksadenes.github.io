@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SRV11 – Web- és FTP-szerver dokumentáció</title>
+<style>
+:root{--navy:#14243b;--blue:#2563eb;--cyan:#0ea5e9;--ink:#243247;--muted:#64748b;--line:#e2e8f0;--bg:#f3f6fb;--white:#fff}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.65 "Segoe UI",Arial,sans-serif}
+.hero{background:linear-gradient(125deg,#14243b,#1e40af 70%,#0e7490);color:white;padding:58px 24px 48px}.hero-inner{max-width:1180px;margin:auto}.eyebrow{text-transform:uppercase;letter-spacing:.16em;font-size:12px;font-weight:700;color:#bfdbfe}.hero h1{font-size:clamp(30px,5vw,48px);line-height:1.12;margin:12px 0}.hero p{max-width:760px;color:#dbeafe;margin:0;font-size:17px}
+.layout{max-width:1180px;margin:30px auto;padding:0 20px;display:grid;grid-template-columns:245px minmax(0,1fr);gap:26px}.sidebar{align-self:start;position:sticky;top:20px;background:white;border:1px solid var(--line);border-radius:16px;padding:20px}.sidebar strong{display:block;margin-bottom:12px}.sidebar a{display:block;text-decoration:none;color:#475569;padding:7px 9px;border-radius:8px;font-size:14px}.sidebar a:hover{background:#eff6ff;color:var(--blue)}
+main{min-width:0}.card{background:white;border:1px solid var(--line);border-radius:16px;padding:28px;margin-bottom:20px;box-shadow:0 5px 20px #0f172a08}.card h2{margin:0 0 16px;font-size:23px;color:var(--navy)}.card h3{font-size:17px;margin:22px 0 8px;color:#1e3a5f}.lead{color:var(--muted);margin-top:-6px}.grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.stat{background:#f8fafc;border:1px solid var(--line);padding:15px;border-radius:12px}.stat span{display:block;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.06em}.stat b{display:block;margin-top:4px;font-size:16px;overflow-wrap:anywhere}
+table{width:100%;border-collapse:collapse;margin:12px 0}td,th{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}th{color:#475569;background:#f8fafc;font-size:13px}code{background:#eff6ff;color:#1d4ed8;padding:2px 6px;border-radius:5px;font-family:Consolas,monospace}
+.note{padding:13px 16px;border-left:4px solid var(--cyan);background:#f0f9ff;border-radius:8px;margin:15px 0}.shots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin-top:18px}.shot{border:1px solid var(--line);border-radius:12px;overflow:hidden;background:#f8fafc}.shots{display:grid;grid-template-columns:1fr;gap:20px;margin-top:18px;}.shot img{display:block;width:100%;height:auto;aspect-ratio:16/9; object-fit:contain;background:#e2e8f0;}.shot figcaption{padding:10px 12px;font-size:13px;color:#475569}.shot figcaption b{display:block;color:#1e293b;font-size:14px;margin-bottom:2px}
+footer{text-align:center;color:var(--muted);padding:20px 15px 42px;font-size:13px}
+@media(max-width:850px){.layout{grid-template-columns:1fr}.sidebar{position:static}.sidebar nav{display:grid;grid-template-columns:repeat(2,1fr)}}@media(max-width:600px){.grid,.shots{grid-template-columns:1fr}.card{padding:20px}.hero{padding:42px 20px}}
+@media print{body{background:white}.layout{display:block}.sidebar{display:none}.card{break-inside:avoid;box-shadow:none}.hero{background:#14243b!important;print-color-adjust:exact}}
+</style>
+</head>
+<body>
+<header class="hero"><div class="hero-inner">
+<div class="eyebrow">Informatikai projekt · Dokumentáció</div>
+<h1>Web- és FTP-szerver konfigurálása</h1>
+<p>Windows Server alapú szolgáltatások telepítése és beállítása VirtualBox virtuális környezetben. A dokumentáció bemutatja a hálózati konfigurációt, az IIS webkiszolgálót, a DNS-feloldást és az FTP-kapcsolat tesztelését.</p>
+</div></header>
+<div class="layout">
+<aside class="sidebar"><strong>Tartalom</strong><nav>
+<a href="#projekt">Projektadatok</a><a href="#halozat">Hálózati konfiguráció</a><a href="#iis">IIS telepítése</a><a href="#web">Weboldal és DNS</a><a href="#ftp">FTP-szerver</a><a href="#teszt">Kapcsolat tesztelése</a>
+</nav></aside>
+<main>
+<section class="card" id="projekt"><h2>01 · Projektadatok</h2><p class="lead">A feladat célja egy működő web- és FTP-szolgáltatás kialakítása és ellenőrzése.</p>
+<div class="grid">
+<div class="stat"><span>Szerver neve</span><b>SRV11</b></div><div class="stat"><span>Virtualizáció</span><b>Oracle VirtualBox</b></div><div class="stat"><span>Operációs rendszer</span><b>Windows Server (GUI)</b></div>
+<div class="stat"><span>Memória</span><b>4 GB RAM</b></div><div class="stat"><span>Processzor</span><b>1 CPU · 2 szál</b></div><div class="stat"><span>Tartomány</span><b>iskola.local</b></div>
+</div></section>
+<section class="card" id="halozat"><h2>02 · Hálózati konfiguráció</h2><p>A virtuális gép belső hálózati adaptere a laborhálózathoz, a második adapter pedig hídkapcsolattal a fizikai hálózathoz csatlakozik.</p>
+<table><tr><th>Beállítás</th><th>Érték</th></tr><tr><td>Belső hálózati IP-cím</td><td><code>192.168.30.10/24</code></td></tr><tr><td>Alapértelmezett átjáró</td><td><code>192.168.30.254</code></td></tr><tr><td>Elsődleges DNS</td><td><code>127.0.0.1</code></td></tr><tr><td>Hídkapcsolat címe</td><td><code>10.34.1.27</code></td></tr></table>
+<div class="note">A belső hálózati adapter a laborfeladat címzési tartományát használja. A hídkapcsolt adapter a fizikai gépről történő FTP-elérést teszi lehetővé.</div></section>
+<section class="card" id="iis"><h2>03 · IIS telepítése</h2><p>Az Internet Information Services (IIS) szerepkör a Kiszolgálókezelő Szerepkörök és szolgáltatások hozzáadása varázslójával került telepítésre. A webkiszolgáló szerepkörhöz szükséges összetevők kiválasztása után a telepítés befejeződött.</p>
+<div class="shots"><figure class="shot"><img src="Az IIS telepitese.png" alt="IIS telepítésének képernyőképe"><figcaption><b>IIS telepítése</b>A szerepkör telepítését bemutató képernyőkép.</figcaption></figure></div></section>
+<section class="card" id="web"><h2>04 · Weboldal és DNS</h2><p>Az IIS-ben létrehozott webhely a böngészőből érhető el. A DNS-kiszolgáló A-rekordja a megadott nevet a szerver belső IP-címére oldja fel.</p>
+<h3>DNS-rekord</h3><table><tr><th>Név</th><th>Típus</th><th>Cím</th></tr><tr><td><code>www</code></td><td>A</td><td><code>192.168.30.10</code></td></tr></table>
+<div class="shots">
+<figure class="shot"><img src="weboldal.png" alt="Saját weboldal képernyőképe"><figcaption><b>Saját weboldal</b>A böngészőben megjelenő elkészült weboldal.</figcaption></figure>
+<figure class="shot"><img src="dns.png" alt="DNS működésének képernyőképe"><figcaption><b>DNS működése</b>A DNS-rekord vagy a névfeloldás ellenőrzése.</figcaption></figure>
+<figure class="shot"><img src="domain nev.png" alt="Domain név működésének képernyőképe"><figcaption><b>Domain név működése</b>A <code>www.iskola.hu</code> cím böngészőből történő megnyitása.</figcaption></figure>
+</div></section>
+<section class="card" id="ftp"><h2>05 · FTP-szerver konfigurációja</h2><p>Az IIS FTP-szolgáltatása lehetővé teszi a fájlok hálózaton keresztüli elérését. A bejelentkezéshez külön tartományi felhasználó készült.</p>
+<table><tr><th>Beállítás</th><th>Érték</th></tr><tr><td>FTP-kiszolgáló</td><td><code>10.34.1.27</code></td></tr><tr><td>Port</td><td><code>21</code></td></tr><tr><td>Felhasználó</td><td><code>ISKOLA\ftpuser</code></td></tr><tr><td>Kliensprogram</td><td>WinSCP</td></tr></table>
+<div class="shots">
+<figure class="shot"><img src="Hitelesites engedelyezes.png" alt="FTP felhasználó és jogosultságok képernyőképe"><figcaption><b>FTP-hitelesítés és engedélyezés</b>Az FTP-felhasználó és a hozzá tartozó jogosultságok beállítása.</figcaption></figure>
+<figure class="shot"><img src="winscp.png" alt="WinSCP sikeres csatlakozás képernyőképe"><figcaption><b>Sikeres WinSCP-kapcsolat</b>A kliensprogramban létrejött FTP-kapcsolat.</figcaption></figure>
+</div></section>
+<section class="card" id="teszt"><h2>06 · Kapcsolat tesztelése</h2><p>A webes szolgáltatás böngészőből, az FTP-szolgáltatás pedig WinSCP kliensprogrammal ellenőrizhető. A sikeres csatlakozás igazolja, hogy a hálózati elérés, a hitelesítés és a szükséges jogosultságok megfelelően működnek.</p>
+</section>
+</main></div>
+<footer>SRV11 · Windows Server web- és FTP-szerver dokumentáció</footer>
+</body></html>
